@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    plugins.withId('java-library') {
+        dependencies {
+            api platform('org.springframework.boot:spring-boot-dependencies:3.3.7')
+        }
+    }
+
+    plugins.withId('java') {
+        if (!plugins.hasPlugin('java-library')) {
+            dependencies {
+                implementation platform('org.springframework.boot:spring-boot-dependencies:3.3.7')
+            }
+        }
+    }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+}
+

@@ -1,0 +1,57 @@
+plugins {
+    id 'org.springframework.boot' version '3.3.7'
+    id 'java'
+}
+
+group = 'com.popzii'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':common')
+    implementation project(':product')
+    implementation project(':user')
+    implementation project(':vendor')
+    implementation project(':order')
+    implementation project(':payment')
+    implementation project(':notification')
+    implementation project(':auth')
+    implementation project(':admin')
+    implementation project(':restaurant')
+    implementation project(':foodorder')
+    implementation project(':instamart')
+    implementation project(':cart')
+    implementation project(':coupon')
+    implementation project(':integration-mock')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.liquibase:liquibase-core'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+    runtimeOnly 'com.h2database:h2'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

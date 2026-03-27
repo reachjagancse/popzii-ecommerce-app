@@ -1,0 +1,25 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'popzii-server'
+
+include 'common'
+include 'auth'
+include 'user'
+include 'vendor'
+include 'product'
+include 'order'
+include 'payment'
+include 'notification'
+include 'admin'
+include 'restaurant'
+include 'foodorder'
+include 'instamart'
+include 'cart'
+include 'coupon'
+include 'integration-mock'
+include 'app'

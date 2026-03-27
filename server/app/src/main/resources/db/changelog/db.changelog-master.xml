@@ -1,0 +1,890 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1" author="popzii">
+        <createTable tableName="users">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)">
+                <constraints unique="true"/>
+            </column>
+            <column name="phone" type="VARCHAR(20)">
+                <constraints unique="true"/>
+            </column>
+            <column name="role" type="VARCHAR(50)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20" author="superapp">
+        <createTable tableName="instamart_categories">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="deleted_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="instamart_products">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="category_id" type="BIGINT">
+                <constraints foreignKeyName="fk_instamart_product_category" referencedTableName="instamart_categories" referencedColumnNames="id"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="brand" type="VARCHAR(255)"/>
+            <column name="unit" type="VARCHAR(50)"/>
+            <column name="base_price" type="DECIMAL(19,2)"/>
+            <column name="discount_percent" type="DECIMAL(5,2)"/>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="deleted_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="instamart_product_variants">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="product_id" type="BIGINT">
+                <constraints foreignKeyName="fk_instamart_variant_product" referencedTableName="instamart_products" referencedColumnNames="id"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="sku" type="VARCHAR(100)"/>
+            <column name="price" type="DECIMAL(19,2)"/>
+            <column name="stock" type="INT"/>
+            <column name="is_default" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="bulk_min_qty" type="INT"/>
+            <column name="bulk_price" type="DECIMAL(19,2)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="deleted_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="instamart_inventory_logs">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="product_id" type="BIGINT">
+                <constraints foreignKeyName="fk_instamart_log_product" referencedTableName="instamart_products" referencedColumnNames="id"/>
+            </column>
+            <column name="variant_id" type="BIGINT">
+                <constraints foreignKeyName="fk_instamart_log_variant" referencedTableName="instamart_product_variants" referencedColumnNames="id"/>
+            </column>
+            <column name="change_qty" type="INT"/>
+            <column name="reason" type="VARCHAR(255)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <createIndex tableName="instamart_products" indexName="idx_instamart_products_category">
+            <column name="category_id"/>
+        </createIndex>
+        <createIndex tableName="instamart_product_variants" indexName="idx_instamart_variants_product">
+            <column name="product_id"/>
+        </createIndex>
+        <createIndex tableName="instamart_product_variants" indexName="idx_instamart_variants_sku">
+            <column name="sku"/>
+        </createIndex>
+        <createIndex tableName="instamart_inventory_logs" indexName="idx_instamart_logs_product">
+            <column name="product_id"/>
+        </createIndex>
+        <createIndex tableName="instamart_inventory_logs" indexName="idx_instamart_logs_variant">
+            <column name="variant_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="21" author="superapp">
+        <createTable tableName="restaurants">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="owner_id" type="BIGINT">
+                <constraints foreignKeyName="fk_restaurant_owner" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="address" type="VARCHAR(500)"/>
+            <column name="cuisine" type="VARCHAR(100)"/>
+            <column name="rating" type="DECIMAL(3,2)"/>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="deleted_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="restaurant_menu_categories">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="restaurant_id" type="BIGINT">
+                <constraints foreignKeyName="fk_menu_category_restaurant" referencedTableName="restaurants" referencedColumnNames="id"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="sort_order" type="INT"/>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="deleted_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="restaurant_menu_items">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="category_id" type="BIGINT">
+                <constraints foreignKeyName="fk_menu_item_category" referencedTableName="restaurant_menu_categories" referencedColumnNames="id"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="price" type="DECIMAL(19,2)"/>
+            <column name="is_veg" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="is_available" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="deleted_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <createIndex tableName="restaurants" indexName="idx_restaurant_owner">
+            <column name="owner_id"/>
+        </createIndex>
+        <createIndex tableName="restaurants" indexName="idx_restaurant_cuisine">
+            <column name="cuisine"/>
+        </createIndex>
+        <createIndex tableName="restaurant_menu_categories" indexName="idx_menu_category_restaurant">
+            <column name="restaurant_id"/>
+        </createIndex>
+        <createIndex tableName="restaurant_menu_items" indexName="idx_menu_item_category">
+            <column name="category_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="22" author="superapp">
+        <createTable tableName="carts">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints foreignKeyName="fk_cart_user" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="status" type="VARCHAR(50)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="cart_items">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="cart_id" type="BIGINT">
+                <constraints foreignKeyName="fk_cart_item_cart" referencedTableName="carts" referencedColumnNames="id"/>
+            </column>
+            <column name="product_id" type="BIGINT"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="price" type="DECIMAL(19,2)"/>
+            <column name="quantity" type="INT"/>
+        </createTable>
+
+        <createTable tableName="food_orders">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints foreignKeyName="fk_food_order_user" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="restaurant_id" type="BIGINT">
+                <constraints foreignKeyName="fk_food_order_restaurant" referencedTableName="restaurants" referencedColumnNames="id"/>
+            </column>
+            <column name="total_amount" type="DECIMAL(19,2)"/>
+            <column name="status" type="VARCHAR(50)"/>
+            <column name="payment_status" type="VARCHAR(50)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="food_order_items">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints foreignKeyName="fk_food_order_item_order" referencedTableName="food_orders" referencedColumnNames="id"/>
+            </column>
+            <column name="menu_item_id" type="BIGINT">
+                <constraints foreignKeyName="fk_food_order_item_menu" referencedTableName="restaurant_menu_items" referencedColumnNames="id"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="price" type="DECIMAL(19,2)"/>
+            <column name="quantity" type="INT"/>
+        </createTable>
+
+        <createIndex tableName="cart_items" indexName="idx_cart_items_cart">
+            <column name="cart_id"/>
+        </createIndex>
+        <createIndex tableName="food_orders" indexName="idx_food_orders_restaurant">
+            <column name="restaurant_id"/>
+        </createIndex>
+        <createIndex tableName="food_order_items" indexName="idx_food_order_items_order">
+            <column name="order_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="23" author="superapp">
+        <insert tableName="instamart_categories">
+            <column name="name" value="Daily Essentials"/>
+            <column name="description" value="Milk, bread, eggs and more"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="instamart_categories">
+            <column name="name" value="Fresh Produce"/>
+            <column name="description" value="Fruits and vegetables"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="instamart_categories">
+            <column name="name" value="Household"/>
+            <column name="description" value="Cleaning and home care"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="instamart_products">
+            <column name="category_id" value="1"/>
+            <column name="name" value="Whole Milk"/>
+            <column name="description" value="1L full cream milk"/>
+            <column name="brand" value="Dairy Best"/>
+            <column name="unit" value="1L"/>
+            <column name="base_price" value="2.40"/>
+            <column name="discount_percent" value="5.00"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="instamart_products">
+            <column name="category_id" value="2"/>
+            <column name="name" value="Bananas"/>
+            <column name="description" value="Fresh bananas, 6 pcs"/>
+            <column name="brand" value="Farm Select"/>
+            <column name="unit" value="6 pcs"/>
+            <column name="base_price" value="1.90"/>
+            <column name="discount_percent" value="0.00"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="instamart_products">
+            <column name="category_id" value="3"/>
+            <column name="name" value="Dish Soap"/>
+            <column name="description" value="Lemon dish soap"/>
+            <column name="brand" value="CleanPro"/>
+            <column name="unit" value="500ml"/>
+            <column name="base_price" value="3.20"/>
+            <column name="discount_percent" value="10.00"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="instamart_product_variants">
+            <column name="product_id" value="1"/>
+            <column name="name" value="1L Pack"/>
+            <column name="sku" value="MILK-1L"/>
+            <column name="price" value="2.40"/>
+            <column name="stock" value="120"/>
+            <column name="is_default" valueBoolean="true"/>
+            <column name="bulk_min_qty" value="6"/>
+            <column name="bulk_price" value="2.10"/>
+        </insert>
+        <insert tableName="instamart_product_variants">
+            <column name="product_id" value="2"/>
+            <column name="name" value="6 pcs"/>
+            <column name="sku" value="BAN-6"/>
+            <column name="price" value="1.90"/>
+            <column name="stock" value="80"/>
+            <column name="is_default" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="restaurants">
+            <column name="owner_id" value="2"/>
+            <column name="name" value="Spice Route"/>
+            <column name="description" value="Modern Indian cuisine"/>
+            <column name="address" value="12 Market Street"/>
+            <column name="cuisine" value="Indian"/>
+            <column name="rating" value="4.6"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="restaurants">
+            <column name="owner_id" value="3"/>
+            <column name="name" value="Pasta Fresca"/>
+            <column name="description" value="Italian favorites"/>
+            <column name="address" value="98 Olive Ave"/>
+            <column name="cuisine" value="Italian"/>
+            <column name="rating" value="4.3"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="restaurant_menu_categories">
+            <column name="restaurant_id" value="1"/>
+            <column name="name" value="Starters"/>
+            <column name="sort_order" value="1"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="restaurant_menu_categories">
+            <column name="restaurant_id" value="1"/>
+            <column name="name" value="Mains"/>
+            <column name="sort_order" value="2"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="restaurant_menu_items">
+            <column name="category_id" value="1"/>
+            <column name="name" value="Crispy Paneer"/>
+            <column name="description" value="Spiced paneer bites"/>
+            <column name="price" value="6.50"/>
+            <column name="is_veg" valueBoolean="true"/>
+            <column name="is_available" valueBoolean="true"/>
+        </insert>
+        <insert tableName="restaurant_menu_items">
+            <column name="category_id" value="2"/>
+            <column name="name" value="Butter Chicken"/>
+            <column name="description" value="Creamy tomato gravy"/>
+            <column name="price" value="12.90"/>
+            <column name="is_veg" valueBoolean="false"/>
+            <column name="is_available" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="2" author="popzii">
+        <createTable tableName="vendors">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="owner_id" type="BIGINT">
+                <constraints foreignKeyName="fk_vendor_owner" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="address" type="VARCHAR(500)"/>
+            <column name="latitude" type="DECIMAL(10,8)"/>
+            <column name="longitude" type="DECIMAL(11,8)"/>
+            <column name="commission" type="DECIMAL(5,2)"/>
+            <column name="status" type="VARCHAR(50)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="popzii">
+        <createTable tableName="products">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="vendor_id" type="BIGINT">
+                <constraints foreignKeyName="fk_product_vendor" referencedTableName="vendors" referencedColumnNames="id"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="price" type="DECIMAL(19,2)"/>
+            <column name="stock" type="INT"/>
+            <column name="category" type="VARCHAR(100)"/>
+            <column name="subcategory" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4" author="popzii">
+        <createTable tableName="orders">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints foreignKeyName="fk_order_user" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="vendor_id" type="BIGINT">
+                <constraints foreignKeyName="fk_order_vendor" referencedTableName="vendors" referencedColumnNames="id"/>
+            </column>
+            <column name="total_amount" type="DECIMAL(19,2)"/>
+            <column name="status" type="VARCHAR(50)"/>
+            <column name="payment_status" type="VARCHAR(50)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="5" author="popzii">
+        <createTable tableName="order_items">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints foreignKeyName="fk_order_item_order" referencedTableName="orders" referencedColumnNames="id"/>
+            </column>
+            <column name="product_id" type="BIGINT">
+                <constraints foreignKeyName="fk_order_item_product" referencedTableName="products" referencedColumnNames="id"/>
+            </column>
+            <column name="quantity" type="INT"/>
+            <column name="price" type="DECIMAL(19,2)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="6" author="popzii">
+        <createTable tableName="transactions">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints foreignKeyName="fk_transaction_order" referencedTableName="orders" referencedColumnNames="id"/>
+            </column>
+            <column name="gateway" type="VARCHAR(50)"/>
+            <column name="transaction_id" type="VARCHAR(255)"/>
+            <column name="status" type="VARCHAR(50)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="7" author="popzii">
+        <insert tableName="users">
+            <column name="name" value="Admin User"/>
+            <column name="email" value="admin@popzii.com"/>
+            <column name="phone" value="+1234567890"/>
+            <column name="role" value="ADMIN"/>
+            <column name="password" value="$2a$10$dummyhashedpassword"/>
+        </insert>
+        <insert tableName="users">
+            <column name="name" value="John Farmer"/>
+            <column name="email" value="john@freshfarms.com"/>
+            <column name="phone" value="+1234567891"/>
+            <column name="role" value="VENDOR"/>
+            <column name="password" value="$2a$10$dummyhashedpassword"/>
+        </insert>
+        <insert tableName="users">
+            <column name="name" value="Mary Dairy"/>
+            <column name="email" value="mary@dairydelight.com"/>
+            <column name="phone" value="+1234567892"/>
+            <column name="role" value="VENDOR"/>
+            <column name="password" value="$2a$10$dummyhashedpassword"/>
+        </insert>
+        <insert tableName="users">
+            <column name="name" value="Snack Vendor"/>
+            <column name="email" value="snack@central.com"/>
+            <column name="phone" value="+1234567893"/>
+            <column name="role" value="VENDOR"/>
+            <column name="password" value="$2a$10$dummyhashedpassword"/>
+        </insert>
+        <insert tableName="users">
+            <column name="name" value="Drink Supplier"/>
+            <column name="email" value="drink@world.com"/>
+            <column name="phone" value="+1234567894"/>
+            <column name="role" value="VENDOR"/>
+            <column name="password" value="$2a$10$dummyhashedpassword"/>
+        </insert>
+        <insert tableName="users">
+            <column name="name" value="Frozen Foods"/>
+            <column name="email" value="frozen@foods.com"/>
+            <column name="phone" value="+1234567895"/>
+            <column name="role" value="VENDOR"/>
+            <column name="password" value="$2a$10$dummyhashedpassword"/>
+        </insert>
+        <insert tableName="users">
+            <column name="name" value="Beauty Store"/>
+            <column name="email" value="beauty@essentials.com"/>
+            <column name="phone" value="+1234567896"/>
+            <column name="role" value="VENDOR"/>
+            <column name="password" value="$2a$10$dummyhashedpassword"/>
+        </insert>
+        <insert tableName="users">
+            <column name="name" value="Pharmacy Owner"/>
+            <column name="email" value="pharm@health.com"/>
+            <column name="phone" value="+1234567897"/>
+            <column name="role" value="VENDOR"/>
+            <column name="password" value="$2a$10$dummyhashedpassword"/>
+        </insert>
+        <insert tableName="vendors">
+            <column name="owner_id" value="2"/>
+            <column name="name" value="Fresh Farms"/>
+            <column name="address" value="123 Farm Road"/>
+            <column name="latitude" value="40.7128"/>
+            <column name="longitude" value="-74.0060"/>
+            <column name="commission" value="5.00"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+        <insert tableName="vendors">
+            <column name="owner_id" value="3"/>
+            <column name="name" value="Dairy Delight"/>
+            <column name="address" value="456 Milk Lane"/>
+            <column name="latitude" value="40.7589"/>
+            <column name="longitude" value="-73.9851"/>
+            <column name="commission" value="4.50"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+        <insert tableName="vendors">
+            <column name="owner_id" value="4"/>
+            <column name="name" value="Snack Central"/>
+            <column name="address" value="789 Snack Street"/>
+            <column name="latitude" value="40.7505"/>
+            <column name="longitude" value="-73.9934"/>
+            <column name="commission" value="6.00"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+        <insert tableName="vendors">
+            <column name="owner_id" value="5"/>
+            <column name="name" value="Beverage World"/>
+            <column name="address" value="321 Drink Ave"/>
+            <column name="latitude" value="40.7282"/>
+            <column name="longitude" value="-73.7949"/>
+            <column name="commission" value="5.50"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+        <insert tableName="vendors">
+            <column name="owner_id" value="6"/>
+            <column name="name" value="Frozen Foods Co"/>
+            <column name="address" value="654 Ice Road"/>
+            <column name="latitude" value="40.7831"/>
+            <column name="longitude" value="-73.9712"/>
+            <column name="commission" value="4.00"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+        <insert tableName="vendors">
+            <column name="owner_id" value="7"/>
+            <column name="name" value="Beauty Essentials"/>
+            <column name="address" value="987 Beauty Blvd"/>
+            <column name="latitude" value="40.7614"/>
+            <column name="longitude" value="-73.9776"/>
+            <column name="commission" value="7.00"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+        <insert tableName="vendors">
+            <column name="owner_id" value="8"/>
+            <column name="name" value="Health Pharmacy"/>
+            <column name="address" value="147 Medicine Way"/>
+            <column name="latitude" value="40.7505"/>
+            <column name="longitude" value="-73.9934"/>
+            <column name="commission" value="3.50"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Tomatoes"/>
+            <column name="description" value="Fresh red tomatoes"/>
+            <column name="price" value="2.50"/>
+            <column name="stock" value="100"/>
+            <column name="vendor_id" value="1"/>
+            <column name="category" value="Vegetables"/>
+            <column name="subcategory" value="Root Vegetables"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Carrots"/>
+            <column name="description" value="Organic carrots"/>
+            <column name="price" value="1.80"/>
+            <column name="stock" value="80"/>
+            <column name="vendor_id" value="1"/>
+            <column name="category" value="Vegetables"/>
+            <column name="subcategory" value="Root Vegetables"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Spinach"/>
+            <column name="description" value="Fresh spinach leaves"/>
+            <column name="price" value="1.20"/>
+            <column name="stock" value="60"/>
+            <column name="vendor_id" value="1"/>
+            <column name="category" value="Vegetables"/>
+            <column name="subcategory" value="Leafy Greens"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Broccoli"/>
+            <column name="description" value="Green broccoli florets"/>
+            <column name="price" value="3.00"/>
+            <column name="stock" value="40"/>
+            <column name="vendor_id" value="1"/>
+            <column name="category" value="Vegetables"/>
+            <column name="subcategory" value="Cruciferous"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Potatoes"/>
+            <column name="description" value="Fresh potatoes"/>
+            <column name="price" value="1.50"/>
+            <column name="stock" value="120"/>
+            <column name="vendor_id" value="1"/>
+            <column name="category" value="Vegetables"/>
+            <column name="subcategory" value="Root Vegetables"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Onions"/>
+            <column name="description" value="Red onions"/>
+            <column name="price" value="1.00"/>
+            <column name="stock" value="90"/>
+            <column name="vendor_id" value="1"/>
+            <column name="category" value="Vegetables"/>
+            <column name="subcategory" value="Allium"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Milk"/>
+            <column name="description" value="Fresh whole milk"/>
+            <column name="price" value="3.20"/>
+            <column name="stock" value="50"/>
+            <column name="vendor_id" value="2"/>
+            <column name="category" value="Dairy"/>
+            <column name="subcategory" value="Milk"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Cheese"/>
+            <column name="description" value="Cheddar cheese block"/>
+            <column name="price" value="5.50"/>
+            <column name="stock" value="30"/>
+            <column name="vendor_id" value="2"/>
+            <column name="category" value="Dairy"/>
+            <column name="subcategory" value="Cheese"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Butter"/>
+            <column name="description" value="Salted butter"/>
+            <column name="price" value="4.00"/>
+            <column name="stock" value="25"/>
+            <column name="vendor_id" value="2"/>
+            <column name="category" value="Dairy"/>
+            <column name="subcategory" value="Butter &amp; Cream"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Yogurt"/>
+            <column name="description" value="Greek yogurt"/>
+            <column name="price" value="2.50"/>
+            <column name="stock" value="45"/>
+            <column name="vendor_id" value="2"/>
+            <column name="category" value="Dairy"/>
+            <column name="subcategory" value="Yogurt"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Cream"/>
+            <column name="description" value="Whipping cream"/>
+            <column name="price" value="3.80"/>
+            <column name="stock" value="20"/>
+            <column name="vendor_id" value="2"/>
+            <column name="category" value="Dairy"/>
+            <column name="subcategory" value="Butter &amp; Cream"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Chips"/>
+            <column name="description" value="Potato chips"/>
+            <column name="price" value="2.00"/>
+            <column name="stock" value="200"/>
+            <column name="vendor_id" value="3"/>
+            <column name="category" value="Snacks"/>
+            <column name="subcategory" value="Chips &amp; Crisps"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Chocolate"/>
+            <column name="description" value="Dark chocolate bar"/>
+            <column name="price" value="1.50"/>
+            <column name="stock" value="150"/>
+            <column name="vendor_id" value="3"/>
+            <column name="category" value="Snacks"/>
+            <column name="subcategory" value="Chocolates"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Cookies"/>
+            <column name="description" value="Chocolate chip cookies"/>
+            <column name="price" value="3.50"/>
+            <column name="stock" value="80"/>
+            <column name="vendor_id" value="3"/>
+            <column name="category" value="Snacks"/>
+            <column name="subcategory" value="Cookies"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Popcorn"/>
+            <column name="description" value="Microwave popcorn"/>
+            <column name="price" value="1.80"/>
+            <column name="stock" value="100"/>
+            <column name="vendor_id" value="3"/>
+            <column name="category" value="Snacks"/>
+            <column name="subcategory" value="Chips &amp; Crisps"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Nuts"/>
+            <column name="description" value="Mixed nuts"/>
+            <column name="price" value="6.00"/>
+            <column name="stock" value="40"/>
+            <column name="vendor_id" value="3"/>
+            <column name="category" value="Snacks"/>
+            <column name="subcategory" value="Nuts &amp; Dry Fruits"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Soda"/>
+            <column name="description" value="Cola drink"/>
+            <column name="price" value="1.20"/>
+            <column name="stock" value="120"/>
+            <column name="vendor_id" value="4"/>
+            <column name="category" value="Drinks"/>
+            <column name="subcategory" value="Soft Drinks"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Juice"/>
+            <column name="description" value="Orange juice"/>
+            <column name="price" value="2.80"/>
+            <column name="stock" value="60"/>
+            <column name="vendor_id" value="4"/>
+            <column name="category" value="Drinks"/>
+            <column name="subcategory" value="Juices"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Water"/>
+            <column name="description" value="Mineral water"/>
+            <column name="price" value="0.80"/>
+            <column name="stock" value="200"/>
+            <column name="vendor_id" value="4"/>
+            <column name="category" value="Drinks"/>
+            <column name="subcategory" value="Water"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Tea"/>
+            <column name="description" value="Green tea bags"/>
+            <column name="price" value="3.20"/>
+            <column name="stock" value="70"/>
+            <column name="vendor_id" value="4"/>
+            <column name="category" value="Drinks"/>
+            <column name="subcategory" value="Tea &amp; Coffee"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Coffee"/>
+            <column name="description" value="Ground coffee"/>
+            <column name="price" value="8.50"/>
+            <column name="stock" value="35"/>
+            <column name="vendor_id" value="4"/>
+            <column name="category" value="Drinks"/>
+            <column name="subcategory" value="Tea &amp; Coffee"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Ice Cream"/>
+            <column name="description" value="Vanilla ice cream"/>
+            <column name="price" value="4.00"/>
+            <column name="stock" value="40"/>
+            <column name="vendor_id" value="5"/>
+            <column name="category" value="Frozen"/>
+            <column name="subcategory" value="Ice Cream"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Frozen Pizza"/>
+            <column name="description" value="Pepperoni pizza"/>
+            <column name="price" value="6.50"/>
+            <column name="stock" value="25"/>
+            <column name="vendor_id" value="5"/>
+            <column name="category" value="Frozen"/>
+            <column name="subcategory" value="Frozen Meals"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Frozen Vegetables"/>
+            <column name="description" value="Mixed frozen vegetables"/>
+            <column name="price" value="2.50"/>
+            <column name="stock" value="50"/>
+            <column name="vendor_id" value="5"/>
+            <column name="category" value="Frozen"/>
+            <column name="subcategory" value="Frozen Vegetables"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Frozen Fish"/>
+            <column name="description" value="Frozen salmon fillets"/>
+            <column name="price" value="12.00"/>
+            <column name="stock" value="15"/>
+            <column name="vendor_id" value="5"/>
+            <column name="category" value="Frozen"/>
+            <column name="subcategory" value="Frozen Meat"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Frozen Fries"/>
+            <column name="description" value="Frozen french fries"/>
+            <column name="price" value="3.50"/>
+            <column name="stock" value="60"/>
+            <column name="vendor_id" value="5"/>
+            <column name="category" value="Frozen"/>
+            <column name="subcategory" value="Frozen Meals"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Shampoo"/>
+            <column name="description" value="Hair shampoo"/>
+            <column name="price" value="3.50"/>
+            <column name="stock" value="70"/>
+            <column name="vendor_id" value="6"/>
+            <column name="category" value="Beauty"/>
+            <column name="subcategory" value="Hair Care"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Soap"/>
+            <column name="description" value="Body soap"/>
+            <column name="price" value="1.80"/>
+            <column name="stock" value="90"/>
+            <column name="vendor_id" value="6"/>
+            <column name="category" value="Beauty"/>
+            <column name="subcategory" value="Skin Care"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Toothpaste"/>
+            <column name="description" value="Fluoride toothpaste"/>
+            <column name="price" value="2.20"/>
+            <column name="stock" value="80"/>
+            <column name="vendor_id" value="6"/>
+            <column name="category" value="Beauty"/>
+            <column name="subcategory" value="Oral Care"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Deodorant"/>
+            <column name="description" value="Men's deodorant"/>
+            <column name="price" value="3.00"/>
+            <column name="stock" value="60"/>
+            <column name="vendor_id" value="6"/>
+            <column name="category" value="Beauty"/>
+            <column name="subcategory" value="Fragrances"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Face Cream"/>
+            <column name="description" value="Moisturizing face cream"/>
+            <column name="price" value="8.50"/>
+            <column name="stock" value="30"/>
+            <column name="vendor_id" value="6"/>
+            <column name="category" value="Beauty"/>
+            <column name="subcategory" value="Skin Care"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Aspirin"/>
+            <column name="description" value="Pain relief tablets"/>
+            <column name="price" value="4.20"/>
+            <column name="stock" value="100"/>
+            <column name="vendor_id" value="7"/>
+            <column name="category" value="Pharmacy"/>
+            <column name="subcategory" value="Pain Relief"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Bandages"/>
+            <column name="description" value="First aid bandages"/>
+            <column name="price" value="2.50"/>
+            <column name="stock" value="150"/>
+            <column name="vendor_id" value="7"/>
+            <column name="category" value="Pharmacy"/>
+            <column name="subcategory" value="First Aid"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Vitamins"/>
+            <column name="description" value="Multivitamin tablets"/>
+            <column name="price" value="8.00"/>
+            <column name="stock" value="50"/>
+            <column name="vendor_id" value="7"/>
+            <column name="category" value="Pharmacy"/>
+            <column name="subcategory" value="Vitamins"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Cough Syrup"/>
+            <column name="description" value="Cough relief syrup"/>
+            <column name="price" value="6.50"/>
+            <column name="stock" value="40"/>
+            <column name="vendor_id" value="7"/>
+            <column name="category" value="Pharmacy"/>
+            <column name="subcategory" value="Cough &amp; Cold"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Antiseptic"/>
+            <column name="description" value="Wound antiseptic cream"/>
+            <column name="price" value="3.80"/>
+            <column name="stock" value="70"/>
+            <column name="vendor_id" value="7"/>
+            <column name="category" value="Pharmacy"/>
+            <column name="subcategory" value="First Aid"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
